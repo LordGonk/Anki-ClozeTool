@@ -1,0 +1,14 @@
+# High Priority
+- Add more audio file support
+- Add console output
+
+# Medium
+- config file
+- Check if audio file exists before creating it
+- Option to store csv somewhere
+- Text only option
+
+# Low
+- Fix timing of target and next line, in conjunction with endTime
+- Retrieve title and artist wherever possible (lrc, mp3, ask)
+- Audio cut tester/editor
