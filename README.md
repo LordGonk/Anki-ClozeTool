@@ -7,7 +7,9 @@ Short project description
 # Customization
 
 # Problems/Warnings
-System compatability
+System compatibility
+Import audio file compatibility
+	Anything supported by FFMpeg (or libav)
 
 # License
 GPLv3

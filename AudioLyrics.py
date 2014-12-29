@@ -1,5 +1,5 @@
 '''
-Anki Audio Cloze Generator
+Anki Clozed Audio Generator
 Copyright 2014 Peter Moran.
 Version 0.8.0
 
@@ -22,13 +22,12 @@ AnkiLPCG
 
 ###################################################################
 ''' Options/Parameters '''
-line_depth = 3  # Number of lines to include on a full card
-initial_Dir = ''  # Optional override for starting file directory in the file selector (defaults to desktop)
+line_depth = 3              # Number of lines to include on a full card
+initial_Dir = ''            # Optional override for starting file directory in the file selector (defaults to desktop)
 custom_anki_location = ''
-anki_User = 'User 1'  # User name in Anki window title bar and/or in 'My Documents/Anki/'
-file_Type = '.mp3'
+anki_User = 'User 1'        # User name in Anki window title bar and/or in 'My Documents/Anki/'
 ffmpegLoc = "/ffmpeg/bin/ffmpeg.exe"
-saveCSV = True
+saveCSV = True              # Option to save a copy of the text file imported to Anki
 ###################################################################
 
 import os
@@ -52,13 +51,14 @@ if initial_Dir == '':
 
 # Open audio and lyric files
 AudioSegment.converter = ffmpegLoc
-audioLoc = askopenfilename(title='Pick a song', filetypes=[('Audio', '*.mp3')], initialdir=initial_Dir)
+audioLoc = askopenfilename(title='Pick a song', filetypes=[('Audio', ('*.mp3', '.wav', '.wma', '.m4a', 'm4p', '.aac', '.ogg', '.oga', '.flac', '.3gp')), ('All formats', ('*.*'))], initialdir=initial_Dir)
 if not audioLoc: 
     sys.exit()
-lrcLoc = askopenfilename(title='Pick song lyrics', filetypes=[('Lyric File', '*.lrc')], initialdir=initial_Dir)
+lrcLoc = askopenfilename(title='Pick song lyrics', filetypes=[('Lyric File', '*.lrc'), ('Text File', ('*.txt'))], initialdir=initial_Dir)
 if not lrcLoc: 
     sys.exit()
-audio = AudioSegment.from_mp3(audioLoc)
+audioInFormat = os.path.splitext(audioLoc)[1][1:]
+audio = AudioSegment.from_file(audioLoc, format=audioInFormat)
 lrc = open(lrcLoc)
     
 def locate_anki_executable():
@@ -177,9 +177,9 @@ class Card:
     def end(self):
         return self.card[-1].endTime()
     def preAudioFile(self):
-        return album + '_' + title + '_' + str(self.start()) + '-' + str(self.preEnd()) + file_Type
+        return album + '_' + title + '_' + str(self.start()) + '-' + str(self.preEnd()) + '.mp3'
     def postAudioFile(self):
-        return album + '_' + title + '_' + str(self.preEnd()) + '-' + str(self.end()) + file_Type
+        return album + '_' + title + '_' + str(self.preEnd()) + '-' + str(self.end()) + '.mp3'
     def __str__(self):
         preSound = '[sound:' + self.preAudioFile() + ']'
         postSound = '[sound:' + self.postAudioFile() + ']'

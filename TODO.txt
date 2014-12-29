@@ -1,11 +1,8 @@
 # High Priority
-- Add more audio file support
 - Add console output
 
 # Medium
 - config file
-- Check if audio file exists before creating it
-- Option to store csv somewhere
 - Text only option
 
 # Low
