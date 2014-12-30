@@ -1,3 +1,8 @@
+# Data files used by program
+*.lrc
+*.mp3
+*.txt
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
