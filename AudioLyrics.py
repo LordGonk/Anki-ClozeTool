@@ -120,7 +120,7 @@ def peekNextLine():
     return targetLine
 
 # Read title, album, and artist
-artist, title, album = 'Unknown Artist', 'Unknown Title', 'Unknown Album'
+artist, title, album, offset = 'Unknown Artist', 'Unknown Title', 'Unknown Album', 0
 while True:
     fileLine = pullLine()
     tag = fileLine[1:3]
@@ -130,27 +130,30 @@ while True:
         title = fileLine[5:-1]
     if tag == 'al':
         album = fileLine[5:-1]
+    if tag == 'of':
+        offset = int(fileLine[9:-1])
     if any(c in peekNextLine()[1:3] for c in '0123456789'):
         break
 
 class StampLyrc:
     """A simple class for storing a line of lyrics and 
     the time stamp it starts and ends"""
-    def readTime(self, timeStamp):
+    def startTime(self, timeStamp):
         milli = 0
         milli += int(timeStamp[1:3]) * 60000
         milli += int(timeStamp[4:6]) * 1000
         milli += int(timeStamp[7:9]) * 10
+        milli += offset
         return milli
     def endTime(self):
         if nextLine == '':
             return len(audio)
         else:
-            return self.readTime(peekNextLine())
+            return self.startTime(peekNextLine())
     def __init__(self, line):
         """Reads a .lcr formatted string to pull out the millisecond time
         stamp and the line of lyrics associated with it"""
-        self.milli = self.readTime(line[:10])
+        self.milli = self.startTime(line[:10])
         self.lyric = line[10:]
         self.nextMilli = self.endTime()
     def __str__(self):

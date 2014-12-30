@@ -1,11 +1,13 @@
 # High Priority
-- Add console output
+- Improved console output
+- Ask for artist and title when not available
+- Text only option
+- Option prevent repeat cards
+- Differentiate cards that have the same context lyrics
 
 # Medium
 - config file
-- Text only option
+- Newline fix tool
 
 # Low
-- Fix timing of target and next line, in conjunction with endTime
-- Retrieve title and artist wherever possible (lrc, mp3, ask)
 - Audio cut tester/editor
