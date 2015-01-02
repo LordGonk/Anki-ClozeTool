@@ -22,23 +22,29 @@ AnkiLPCG
 
 ###################################################################
 ''' Options/Parameters '''
-line_depth = 3              # Number of lines to include on a full card
-initial_Dir = ''            # Optional override for starting file directory in the file selector (defaults to desktop)
+line_depth = 3                  # Number of lines to include on a full lyrics
+initial_Dir = ''                # Optional override for starting file directory in the file selector (defaults to desktop)
 custom_anki_location = ''
-anki_User = 'User 1'        # User name in Anki window title bar and/or in 'My Documents/Anki/'
+anki_User = 'User 1'            # User name in Anki window title bar and/or in 'My Documents/Anki/'
 ffmpegLoc = "/ffmpeg/bin/ffmpeg.exe"
-saveCSV = True              # Option to save a copy of the text file imported to Anki
+saveCSV = True                  # Option to save a copy of the lyrics file imported to Anki
+catch_duplicate_cards = True    # If two cards share the same front and back text, only the first will be exported to Anki
 ###################################################################
 
 import os
 import sys
+import copy
 import getpass
 import tempfile
 import traceback
 from tkinter import Tk
 from subprocess import call
-from pydub import AudioSegment
 from tkinter.filedialog import askopenfilename
+# Import pydub without ffmpeg location warning
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from pydub import AudioSegment
 
 # Hide tkinter root window during file dialogs
 root = Tk()
@@ -153,7 +159,7 @@ class StampLyrc:
     def __init__(self, line):
         """Reads a .lcr formatted string to pull out the millisecond time
         stamp and the line of lyrics associated with it"""
-        self.milli = self.startTime(line[:10])
+        self.milliStart = self.startTime(line[:10])
         self.lyric = line[10:]
         self.nextMilli = self.endTime()
     def __str__(self):
@@ -165,34 +171,42 @@ class Card:
         songStart = titleLryc.nextMilli - 3000
         if songStart < 0:
             songStart = 0
-        titleLryc.milli = songStart
-        self.card = [titleLryc]
+        titleLryc.milliStart = songStart
+        self.lyrics = [titleLryc]
     def add(self, line):
-        if len(self.card) < line_depth:
-            self.card.append(StampLyrc(line))
+        if len(self.lyrics) < line_depth:
+            self.lyrics.append(StampLyrc(line))
         else:
-            self.card = self.card[1:]
-            self.card.append(StampLyrc(line))
+            self.lyrics = self.lyrics[1:]
+            self.lyrics.append(StampLyrc(line))
     def start(self):
-        return self.card[0].milli
+        return self.lyrics[0].milliStart
     def preEnd(self):
-        return self.card[-1].milli
+        return self.lyrics[-1].milliStart
     def end(self):
-        return self.card[-1].endTime()
+        return self.lyrics[-1].endTime()
     def preAudioFile(self):
         return album + '_' + title + '_' + str(self.start()) + '-' + str(self.preEnd()) + '.mp3'
     def postAudioFile(self):
         return album + '_' + title + '_' + str(self.preEnd()) + '-' + str(self.end()) + '.mp3'
+    def text(self):
+        text = ''
+        for line in self.lyrics[:-1]:
+            text += str(line)+'\n'
+        text += str(self.lyrics[-1])
+        return text
+    def textEquals(self, card2):
+        return self.text() == card2.text()
     def __str__(self):
-        preSound = '[sound:' + self.preAudioFile() + ']'
-        postSound = '[sound:' + self.postAudioFile() + ']'
-        # Get lyrics for front of card
+        preSound = '[sound:' + self.preAudioFile() + ']<br>'
+        postSound = '[sound:' + self.postAudioFile() + ']<br>'
+        # Get text for front of lyrics
         frontText = ''
-        for line in self.card[:-2]:
+        for line in self.lyrics[:-2]:
             frontText += str(line) + '<br>'
-        frontText += str(self.card[-2])
-        # Add front text and then the text for the back
-        return preSound + frontText + '<br><b style="color:blue">[...]</b>\t' + postSound + frontText + '<br>' + str(self.card[-1])
+        frontText += str(self.lyrics[-2])
+        # Add front lyrics and then the lyrics for the back
+        return preSound + frontText + '<br><b style="color:blue">[...]</b>\t' + postSound + frontText + '<br>' + str(self.lyrics[-1])
 
 ankipath = locate_anki_executable()
 
@@ -215,16 +229,19 @@ ankiMediaDirectory = r'C:\Users\{}\Documents\Anki\{}\collection.media\\'.format(
 # Read lyrics
 card = Card()
 currFileLine = pullLine()
+pastCards = []
 while currFileLine != '':
     card.add(currFileLine)
-    csv.write(str(card))
-    csv.write('\n')
-    if not os.path.isfile(ankiMediaDirectory + card.preAudioFile()):
-        selection = audio[card.start():card.preEnd()]
-        selection.export(ankiMediaDirectory + card.preAudioFile(), format='mp3')
-    if not os.path.isfile(ankiMediaDirectory + card.postAudioFile()):
-        selection = audio[card.preEnd():card.end()]
-        selection.export(ankiMediaDirectory + card.postAudioFile(), format='mp3')
+    if not any(card.textEquals(pastCard) for pastCard in pastCards) or not catch_duplicate_cards:
+        pastCards.append(copy.copy(card))
+        csv.write(str(card))
+        csv.write('\n')
+        if not os.path.isfile(ankiMediaDirectory + card.preAudioFile()):
+            selection = audio[card.start():card.preEnd()]
+            selection.export(ankiMediaDirectory + card.preAudioFile(), format='mp3')
+        if not os.path.isfile(ankiMediaDirectory + card.postAudioFile()):
+            selection = audio[card.preEnd():card.end()]
+            selection.export(ankiMediaDirectory + card.postAudioFile(), format='mp3')
     currFileLine = pullLine()
 
 # Import file to Anki, if a location has been found.
