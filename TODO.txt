@@ -1,14 +1,11 @@
 # High Priority
 - Differentiate cards that have the same context lyrics
-- Text only option
 
 # Medium
 - config file
-- Improved console output
-- Audio cut tester
 - Remember file locations
 
 # Low
-- Ask for artist and title when not available
+- Audio cut tester
 - Extend front and back audio of cards
 - Newline fix tool

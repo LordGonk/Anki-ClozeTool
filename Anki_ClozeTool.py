@@ -1,5 +1,5 @@
 '''
-Anki Clozed Audio Generator
+Anki ClozeTool
 Copyright 2014 Peter Moran.
 Version 0.8.5
 
