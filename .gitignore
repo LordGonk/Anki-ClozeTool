@@ -3,6 +3,10 @@
 *.mp3
 *.txt
 
+# Pydev files
+.pydevproject
+.project
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
