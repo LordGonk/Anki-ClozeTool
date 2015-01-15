@@ -5,9 +5,9 @@ Short project description
 [GitHub project page](https://github.com/jiaaro/pydub)
 Simple install through terminal:
 
-'''
+```
 pip install pydub
-'''
+```
 
 ##FFmpeg (or Libav)
 Pydub requires FFmpeg or Libav to work. Install/unzip one anywhere and you set the location
