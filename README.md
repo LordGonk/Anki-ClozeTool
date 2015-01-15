@@ -3,6 +3,7 @@ Short project description
 # Dependencies
 ##Pydub
 [GitHub project page](https://github.com/jiaaro/pydub)
+
 Simple install through terminal:
 
 ```
