@@ -1,15 +1,19 @@
 Short project description
 
 # Dependencies
-##[Pydub](https://github.com/jiaaro/pydub)
+##Pydub
+[GitHub project page](https://github.com/jiaaro/pydub)
 Simple install through terminal:
+
 '''
 pip install pydub
 '''
+
 ##FFmpeg (or Libav)
-Pydub requires on of these. In the options you can set where you download it to.
+Pydub requires FFmpeg or Libav to work. Install/unzip one anywhere and you set the location
+in settings, or just follow the simple instructions below.
 ###Windows
-My recomendation is to just [download the 32-bit static builds](http://ffmpeg.zeranoe.com/builds/win32/static/ffmpeg-latest-win32-static.7z) ([source](http://ffmpeg.zeranoe.com/builds/)). I also recommend you unzip it to your top directory in a folder named ffmpeg. ClozeTool assumes this as a default.
+My recomendation is to just [download the latest 32-bit static build](http://ffmpeg.zeranoe.com/builds/win32/static/ffmpeg-latest-win32-static.7z). Unzip it to your top directory in a folder named ffmpeg. ClozeTool assumes this as a default.
 
 If you have any troubles, my recomendation is to make sure you have python installed to the default
 (top) directory, and that you select python to be in your system's PATH variable.
