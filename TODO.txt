@@ -1,5 +1,5 @@
 # High Priority
-- Differentiate cards that have the same context lyrics
+
 
 # Medium
 - config file

@@ -27,7 +27,8 @@ custom_initial_dir = ''         # Starting file directory in the file selector (
 custom_anki_location = ''       # Location of Anki.exe if not default
 anki_User = 'User 1'            # User name in Anki window title bar and/or in 'My Documents/Anki/'
 saveCSV = True                  # Saves a copy of the file used to import to Anki
-catch_duplicate_cards = True    # Prevents duplicate cards (same front and back text) from importing
+catch_duplicate_text = True     # Prevents duplicate cards (same front and back text) from importing
+show_verse_count = True         # Front of the card will include a 'verse' count any time a context is repeated, regardless of what the answer is
 show_stanza_count = True        # If cards have the same front context due to repetitions in the text, a hint will be included on repetitions 2 and on
 song_leadtime = 3000            # (For audio) How much time to lead into the first lyric
 ffmpegLoc = "/ffmpeg/bin/ffmpeg.exe" # Location of ffmpeg
@@ -152,6 +153,7 @@ class Card:
         else:
             titleLyrc = '[Start] ' + title
         self.lyrics = [titleLyrc]
+        self.verse = 0
     def add(self, line):
         if len(self.lyrics) < line_depth:
             self.lyrics.append(Lyric(line))
@@ -169,7 +171,7 @@ class Card:
             frontText += str(line) + '<br>'
         frontText += str(self.lyrics[-2])
         # Add front lyrics and then the lyrics for the back
-        return preSound + frontText + '<br><b style="color:blue">[...]</b>\t' + postSound + frontText + '<br>' + str(self.lyrics[-1])
+        return preSound + frontText + '<br><b style="color:blue">['+ self.getVerse() +']</b>\t' + postSound + frontText + '<br>' + str(self.lyrics[-1])
     def __str__(self):
         text = ''
         for line in self.lyrics[:-1]:
@@ -188,6 +190,20 @@ class Card:
         return artist + '_' + title + '_' + str(self.contextEndTime()) + '-' + str(self.cardEndTime()) + '.mp3'
     def textEquals(self, card2):
         return str(self) == str(card2)
+    def contextEquals(self, card2):
+        selfText = ''
+        otherText = ''
+        for line in self.lyrics[:-1]:
+            selfText += str(line)
+        for line in card2.lyrics[:-1]:
+            otherText += str(line)
+        return selfText == otherText
+    def getVerse(self):
+        if self.verse == 0:
+            return '...'
+        else:
+            return 'Verse ' + str(self.verse)
+        
 
 def locate_anki_executable():
     if custom_anki_location:
@@ -254,7 +270,9 @@ currFileLine = pullLine()
 pastCards = []
 while currFileLine != '':
     card.add(currFileLine)
-    if not any(card.textEquals(pastCard) for pastCard in pastCards) or not catch_duplicate_cards:
+    if any(card.contextEquals(pastCard) for pastCard in pastCards) and show_verse_count:
+        card.verse += 1
+    if not any(card.textEquals(pastCard) for pastCard in pastCards) or not catch_duplicate_text:
         pastCards.append(copy.copy(card))        
         csv.write(card.exportText())
         csv.write('\n')
