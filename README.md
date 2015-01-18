@@ -23,7 +23,7 @@ This is the easy, no-nonsense, way to run ClozeTool. It assumes you have install
 
 ## Dependencies
 ####Anki
-Dowload from [their website](http://ankisrs.net/)
+Dowload from [their website](http://ankisrs.net/).
 ####Python 3
 Download and install [Python 3](https://www.python.org/downloads/). I recommend you install to the default directory and with default settings.
 
