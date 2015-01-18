@@ -1,4 +1,4 @@
-Anki ClozeTool is a Python scrip that creates Anki notecards for memorizing sequential information. (For more information about Anki, see [their website](http://ankisrs.net/)) ClozeTool specializes in learning lyrics to songs by accompanying audio clips allong with the text of the song, but it is also designed for learning any type of text or document, such as poems, script lines, or any set of information you need to remember in order.
+Anki ClozeTool is a Python scrip that creates Anki notecards for memorizing sequential information. (For more information about Anki, see [their website](http://ankisrs.net/)). ClozeTool specializes in learning lyrics to songs by accompanying audio clips allong with the text of the song, but it is also designed for learning any type of text or document, such as poems, script lines, or any set of information you need to remember in order.
 
 Each notecard contains a context clue and an answer. The context clue will be a certain number of sequential lines from the text, by default two, and the answer is the next line in the text. This way you can start at any point in the text, and with just two lines know what comes next.
 
