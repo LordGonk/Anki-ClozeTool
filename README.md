@@ -5,7 +5,7 @@ Each notecard contains a context clue and an answer. The context clue will be a 
 ## Quick Start
 This is the easy, no-nonsense, way to run ClozeTool. It assumes you have installed all the dependencies to their default locations and with default options. If it does not work, try editing the settings at the top of Anki_ClozeTool.py with any text editor to suit your setup.
 
-**First**: download and install all of the dependencies, found below
+**First**: [Download Anki-ClozeTool](https://github.com/Peter-Moran/Anki-ClozeTool/archive/master.zip) and install all of the dependencies, found below
 
 #####Text only cards
 
@@ -22,6 +22,8 @@ This is the easy, no-nonsense, way to run ClozeTool. It assumes you have install
 - On import, select the Raw card type, select "Import even if existing note has same first field" in the drop down, and check "Allow HTML in fields." Also, make sure to select what deck you would like to put them in. The rest of the options should be correctly set automatically.
 
 ## Dependencies
+####Anki
+Dowload from [their website](http://ankisrs.net/)
 ####Python 3
 Download and install [Python 3](https://www.python.org/downloads/). I recommend you install to the default directory and with default settings.
 
@@ -36,7 +38,7 @@ Other systems will use the same command.
 
 If you have any troubles, my recommendation is to make sure you have Python installed to the default (top) directory, and that you select Python to be in your system's PATH variable. Note: pip is included with python.
 
-To learn more about the Pydub project, check out [their website](http://pydub.com/) 
+To learn more about the Pydub project, check out [their website](http://pydub.com/).
 
 ####FFmpeg or Libav
 Pydub itself requires either FFmpeg or Libav as multimedia processors in order to work. 
