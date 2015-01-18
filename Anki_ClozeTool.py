@@ -1,7 +1,8 @@
+#! python3
 '''
 Anki ClozeTool
 Copyright 2014 Peter Moran.
-Version 0.8.5
+Version 0.9.0
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,13 +17,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Additional credits
-AnkiLPCG
+Additional credits:
+Anki-ClozeTool is inspired by and borrows code from AnkiLPCG, by Soren Bjornstad.
+Specifically, the functionality for locating Anki and automatically importing to 
+Anki were written by Soren, along with much of the terminal feedback text.
 '''
 
 ###################################################################
 ''' Options/Parameters '''
-line_depth = 3                  # Number of lines per card
+line_depth = 3                  # Number of lines per card (context + answer)
 custom_initial_dir = ''         # Starting file directory in the file selector (defaults to desktop)
 custom_anki_location = ''       # Location of Anki.exe if not default
 anki_User = 'User 1'            # User name in Anki window title bar and/or in 'My Documents/Anki/'
@@ -31,7 +34,7 @@ catch_duplicate_text = True     # Prevents duplicate cards (same front and back 
 show_verse_count = True         # Front of the card will include a 'verse' count any time a context is repeated, regardless of what the answer is
 show_stanza_count = True        # If cards have the same front context due to repetitions in the text, a hint will be included on repetitions 2 and on
 song_leadtime = 3000            # (For audio) How much time to lead into the first lyric
-ffmpegLoc = "/ffmpeg/bin/ffmpeg.exe" # Location of ffmpeg
+ffmpegLoc = "/ffmpeg/bin/ffmpeg.exe" # Location of ffmpeg or 
 ###################################################################
 
 import os
@@ -59,12 +62,11 @@ if custom_initial_dir == '':
     custom_initial_dir = 'C:/Users/%s/Desktop' % user
 
 # Startup
-print('''Anki-ClozeTool v8.0.0
-Copyright 2014-2025 Peter Moran
+print('''Anki-ClozeTool v0.9.0
+Copyright 2015 Peter Moran
 ---------------------------------
-For help and options, see README.md
-
 Please ensure Anki is open, and to the main window only''')
+input("\nPress Enter when ready to select your file")
 
 # Open audio and text/lyric files
 textLoc = askopenfilename(title='Pick text or song lyric file', filetypes=[('Text or Lyric File', ('*.txt', '*.lrc'))], initialdir=custom_initial_dir)
