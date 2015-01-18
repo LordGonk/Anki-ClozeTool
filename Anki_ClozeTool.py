@@ -62,7 +62,9 @@ if custom_initial_dir == '':
 print('''Anki-ClozeTool v8.0.0
 Copyright 2014-2025 Peter Moran
 ---------------------------------
-For help and options, see README.md''')
+For help and options, see README.md
+
+Please ensure Anki is open, and to the main window only''')
 
 # Open audio and text/lyric files
 textLoc = askopenfilename(title='Pick text or song lyric file', filetypes=[('Text or Lyric File', ('*.txt', '*.lrc'))], initialdir=custom_initial_dir)
@@ -153,13 +155,14 @@ class Card:
         else:
             titleLyrc = '[Start] ' + title
         self.lyrics = [titleLyrc]
-        self.verse = 0
+        self.verse = 1
     def add(self, line):
         if len(self.lyrics) < line_depth:
             self.lyrics.append(Lyric(line))
         else:
             self.lyrics = self.lyrics[1:]
             self.lyrics.append(Lyric(line))
+        self.verse = 0
     def exportText(self):
         preSound, postSound = '', ''
         if audio:
@@ -199,7 +202,7 @@ class Card:
             otherText += str(line)
         return selfText == otherText
     def getVerse(self):
-        if self.verse == 0:
+        if self.verse == 1:
             return '...'
         else:
             return 'Verse ' + str(self.verse)
@@ -270,8 +273,9 @@ currFileLine = pullLine()
 pastCards = []
 while currFileLine != '':
     card.add(currFileLine)
-    if any(card.contextEquals(pastCard) for pastCard in pastCards) and show_verse_count:
-        card.verse += 1
+    for pastCard in pastCards:
+        if card.contextEquals(pastCard) and show_verse_count:
+            card.verse = pastCard.verse + 1
     if not any(card.textEquals(pastCard) for pastCard in pastCards) or not catch_duplicate_text:
         pastCards.append(copy.copy(card))        
         csv.write(card.exportText())
