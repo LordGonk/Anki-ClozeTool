@@ -22,6 +22,9 @@ This is the easy, no-nonsense, way to run ClozeTool. It assumes you have install
 - On import, select the Raw card type, select "Import even if existing note has same first field" in the drop down, and check "Allow HTML in fields." Also, make sure to select what deck you would like to put them in. The rest of the options should be correctly set automatically.
 
 ## Dependencies
+####Python 3
+Download and install [Python 3](https://www.python.org/downloads/). I recommend you install to the default directory and with default settings.
+
 ####Pydub
 The easiest way to install Pydub is through a terminal. On Windows this means opening Command Prompt and typing:
 
