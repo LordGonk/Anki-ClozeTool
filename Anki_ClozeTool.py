@@ -29,10 +29,9 @@ line_depth = 3                  # Number of lines per card (context + answer)
 custom_initial_dir = ''         # Starting file directory in the file selector (defaults to desktop)
 custom_anki_location = ''       # Location of Anki.exe if not default
 anki_User = 'User 1'            # User name in Anki window title bar and/or in 'My Documents/Anki/'
-saveCSV = True                  # Saves a copy of the file used to import to Anki
+saveCSV = False                 # Saves a copy of the file used to import to Anki
 catch_duplicate_text = True     # Prevents duplicate cards (same front and back text) from importing
-show_verse_count = True         # Front of the card will include a 'verse' count any time a context is repeated, regardless of what the answer is
-show_stanza_count = True        # If cards have the same front context due to repetitions in the text, a hint will be included on repetitions 2 and on
+show_verse_count = True         # If cards have the same front context due to repetitions in the text, a hint for which iteration ('verse') it is on for all occurences after the first
 song_leadtime = 3000            # (For audio) How much time to lead into the first lyric
 ffmpegLoc = "/ffmpeg/bin/ffmpeg.exe" # Location of ffmpeg or 
 ###################################################################
@@ -164,7 +163,7 @@ class Card:
         else:
             self.lyrics = self.lyrics[1:]
             self.lyrics.append(Lyric(line))
-        self.verse = 0
+        self.verse = 1
     def exportText(self):
         preSound, postSound = '', ''
         if audio:
