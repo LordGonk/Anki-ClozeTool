@@ -33,15 +33,20 @@ saveCSV = False                 # Saves a copy of the file used to import to Ank
 catch_duplicate_text = True     # Prevents duplicate cards (same front and back text) from importing
 show_verse_count = True         # If cards have the same front context due to repetitions in the text, a hint for which iteration ('verse') it is on for all occurences after the first
 song_leadtime = 3000            # (For audio) How much time to lead into the first lyric
-ffmpegLoc = "/ffmpeg/bin/ffmpeg.exe" # Location of ffmpeg or 
+audioOverwrite = True
+amplify = True
+ffmpegLoc = "/ffmpeg/bin/ffmpeg.exe" # Location of ffmpeg
 ###################################################################
 
 import os
 import sys
 import copy
+import time
+import neg23
 import getpass
 import tempfile
 import traceback
+import subprocess
 from tkinter import Tk
 from subprocess import call
 from tkinter.filedialog import askopenfilename
@@ -50,6 +55,8 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     from pydub import AudioSegment
+if amplify:
+    import neg23
 
 # Hide tkinter root window during file dialogs
 root = Tk()
@@ -65,7 +72,7 @@ print('''Anki-ClozeTool v0.9.0
 Copyright 2015 Peter Moran
 ---------------------------------
 Please ensure Anki is open, and to the main window only''')
-input("\nPress Enter when ready to select your file")
+#input("\nPress Enter when ready to select your file")
 
 # Open audio and text/lyric files
 textLoc = askopenfilename(title='Pick text or song lyric file', filetypes=[('Text or Lyric File', ('*.txt', '*.lrc'))], initialdir=custom_initial_dir)
@@ -80,9 +87,20 @@ if textInFormat == 'lrc':
         sys.exit()
     audioInFormat = os.path.splitext(audioLoc)[1][1:]
     audio = AudioSegment.from_file(audioLoc, format=audioInFormat)
+    if amplify:
+        print('\n#################################')
+        print('Running volume normalization:\n')
+        subprocess.call(['neg23', audioLoc], shell=True)
+        print('#################################\n')
+        ampAudLoc = os.path.dirname(audioLoc)+'/neg23/'+os.path.basename(audioLoc)
+        ampAudLoc = ampAudLoc.replace('\\', '/')
+        print('Please wait a moment\n')
+        time.sleep(10)
+        audio = AudioSegment.from_file(ampAudLoc, format=audioInFormat)
 else:
     audio = None
 text = open(textLoc)
+
 
 # Variables and method for reading 'ahead' of the current text/lyric
 def nextContent(file):
@@ -150,6 +168,8 @@ class Card:
         if audio:
             titleLyrc = Lyric('[00:00.00][Song Start] ' + title + ' - ' + artist)
             songStart = titleLyrc.nextMilli - song_leadtime
+            if songStart < 0:
+                songStart = 0
             if songStart < 0:
                 songStart = 0
             titleLyrc.milliStart = songStart
@@ -272,6 +292,7 @@ ankiMediaDirectory = r'C:\Users\{}\Documents\Anki\{}\collection.media\\'.format(
 card = Card()
 currFileLine = pullLine()
 pastCards = []
+progress = 0
 while currFileLine != '':
     card.add(currFileLine)
     for pastCard in pastCards:
@@ -282,13 +303,20 @@ while currFileLine != '':
         csv.write(card.exportText())
         csv.write('\n')
         if audio:
-            if not os.path.isfile(ankiMediaDirectory + card.preAudioFile()):
+            if not os.path.isfile(ankiMediaDirectory + card.preAudioFile()) or audioOverwrite:
                 selection = audio[card.startTime():card.contextEndTime()]
                 selection.export(ankiMediaDirectory + card.preAudioFile(), format='mp3')
-            if not os.path.isfile(ankiMediaDirectory + card.postAudioFile()):
+            if not os.path.isfile(ankiMediaDirectory + card.postAudioFile()) or audioOverwrite:
                 selection = audio[card.contextEndTime():card.cardEndTime()]
                 selection.export(ankiMediaDirectory + card.postAudioFile(), format='mp3')
     currFileLine = pullLine()
+    progress = progress + 1
+    print("Cards made: " + str(progress))
+
+# Cleanup
+if amplify:
+    os.remove(ampAudLoc)
+    os.rmdir(os.path.dirname(ampAudLoc))
 
 # Import file to Anki, if a location has been found.
 if ankipath:

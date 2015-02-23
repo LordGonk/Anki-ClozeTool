@@ -1,11 +1,15 @@
 # High Priority
-- Full documentation
+- Audio cut tester
+- Line / charactor selector
+- More intelligent title selector
+- Encoding compatability
+- Progress indicator
 
 # Medium
 - config file
-- Remember file locations
+- Header option
+- Extend front and back audio of cards
 
 # Low
-- Audio cut tester
-- Extend front and back audio of cards
 - Newline fix tool
+- More documentation
